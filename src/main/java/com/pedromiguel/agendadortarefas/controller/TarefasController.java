@@ -2,11 +2,13 @@ package com.pedromiguel.agendadortarefas.controller;
 
 import com.pedromiguel.agendadortarefas.business.TarefasService;
 import com.pedromiguel.agendadortarefas.business.dto.TarefasDTO;
+import com.pedromiguel.agendadortarefas.infrastructure.enums.StatusNotificacaoEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ObjectInputFilter;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,9 +26,9 @@ public class TarefasController {
     }
 
     @GetMapping("/eventos")
-    public ResponseEntity<List<TarefasDTO>> buscaListaDeTarefasPorPeriodo (
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime dataInicial,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime dataFinal) {
+    public ResponseEntity<List<TarefasDTO>> buscaListaDeTarefasPorPeriodo(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInicial,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFinal) {
 
         return ResponseEntity.ok(tarefasService.buscaTarefasAgendadasPorPeriodo(dataInicial, dataFinal));
     }
@@ -37,4 +39,21 @@ public class TarefasController {
         return ResponseEntity.ok(tarefs);
     }
 
+    @DeleteMapping
+    public ResponseEntity<Void> deletaTarefaPorId(@RequestParam("id") String id) {
+        tarefasService.deletaTarefaPorId(id);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping
+    public ResponseEntity<TarefasDTO> alteraStatusNotificacao(@RequestParam("Status") StatusNotificacaoEnum status,
+                                                              @RequestParam("id") String id) {
+        return ResponseEntity.ok(tarefasService.alteraStatus(status, id));
+    }
+
+    @PutMapping
+    public ResponseEntity<TarefasDTO> updateTarefas(@RequestBody TarefasDTO dto, @RequestParam("id") String id) {
+        return ResponseEntity.ok(tarefasService.updateTarefas(dto, id));
+    }
 }
